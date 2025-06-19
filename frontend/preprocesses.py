@@ -1,6 +1,6 @@
 import pandas as pd 
 import datetime
-import helper
+
 
 df = pd.read_csv('../deliveries.csv')
 match_stats = pd.read_csv('../Match_Info.csv')
@@ -57,4 +57,14 @@ def player_stats():
         players_df.at[i, 'wickets'] = total_wickets
     
     return players_df
+
+def fetch_merged_df():
+    temp_df = df
+    temp_match_stats = match_stats
+    temp_match_stats['match_id'] = temp_match_stats['match_number']
+    temp_match_stats = temp_match_stats.drop(columns=['match_number'])
+
+    merged_df = pd.merge(temp_df, temp_match_stats, on='match_id')
+
+    return merged_df
     
