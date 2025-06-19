@@ -1,9 +1,9 @@
 import pandas as pd 
 import preprocesses
 
-
 df, match_stats = preprocesses.final_database()
 player_stats = preprocesses.player_stats()
+merged_df = preprocesses.fetch_merged_df()
 
 # All Players
 def fetch_all_players():
@@ -91,5 +91,62 @@ def player_of_match(player):
     
     return len(matches)
 
+# Runs Performance year wise
+def runs_per_year(player):
+    
+    ipl_seasons = merged_df['year'].unique().tolist()
+    year_wise_runs = []
 
+    for year in ipl_seasons:
+        temp_players_stats = merged_df[(merged_df['year'] == year) & (merged_df['batter'] == player)]
+        runs = temp_players_stats['batsman_runs'].tolist()
+        year_wise_runs.append(sum(runs))
 
+    return ipl_seasons, year_wise_runs
+
+# Number of sixes
+def number_of_sixes(player):
+    ipl_seasons = merged_df['year'].unique().tolist()
+    all_sixes = []
+    for year in ipl_seasons:
+        sixes = merged_df[(merged_df['batter'] == player) & (merged_df['batsman_runs'] == 6) & (merged_df['result'] != 'no result') & (merged_df['year'] == year)]['batsman_runs'].count()
+        all_sixes.append(int(sixes))
+    
+    return ipl_seasons, all_sixes
+
+# Number of Fours
+def number_of_fours(player):
+    ipl_seasons = merged_df['year'].unique().tolist()
+    all_fours = []
+    for year in ipl_seasons:
+        fours = merged_df[(merged_df['batter'] == player) & (merged_df['batsman_runs'] == 4) & (merged_df['result'] != 'no result') & (merged_df['year'] == year)]['batsman_runs'].count()
+        all_fours.append(int(fours))
+    
+    return ipl_seasons, all_fours
+
+# Number of Wickets
+def total_number_of_wickets(player):
+    ipl_seasons = merged_df['year'].unique().tolist()
+    all_wickets = []
+    for year in ipl_seasons:
+        wickets = merged_df[(merged_df['dismissal_kind'].isin(['caught', 'bowled', 'lbw', 'stumped', 'caught and bowled', 'hit wicket']))]
+        wickets = merged_df[(merged_df['bowler'] == player) & (merged_df['is_wicket'] == 1) & (merged_df['result'] != 'no result') & (merged_df['year'] == year)]['is_wicket'].count()
+        all_wickets.append(int(wickets))
+    
+    return ipl_seasons, all_wickets
+
+# Stats of player over wise
+def over_wise_stats(player):
+    new_df = merged_df[merged_df['batter'] == player][['batter', 'over', 'batsman_runs', 'year']]
+    runs_by_over = []
+    for year in range(2008, 2025):
+        temp_new_df = new_df[new_df['year'] == year]
+        stats = []
+        for over in range(20):
+            filter_by_over = temp_new_df[temp_new_df['over'] == over]
+            run = sum(filter_by_over['batsman_runs'].tolist())
+            stats.append(run)
+        
+        runs_by_over.append(stats)
+    
+    return runs_by_over
