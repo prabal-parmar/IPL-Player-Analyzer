@@ -5,6 +5,7 @@ import datetime
 df = pd.read_csv('../deliveries.csv')
 match_stats = pd.read_csv('../Match_Info.csv')
 
+
 # Fetch all platers
 def fetch_all_players():
     all_batters = df['batter'].unique().tolist()
@@ -67,4 +68,6 @@ def fetch_merged_df():
     merged_df = pd.merge(temp_df, temp_match_stats, on='match_id')
 
     return merged_df
+
+
     

@@ -2,12 +2,12 @@ import streamlit as st
 import helper
 import matplotlib.pyplot as plt
 import seaborn as sns
+import comparison
 
 st.set_page_config(
     page_title="IPL Players Analysis",
     layout="wide",
     initial_sidebar_state="expanded")
-
 
 st.header("IPL Players Analysis")
 
@@ -16,6 +16,7 @@ all_players = helper.fetch_all_players()
 option = st.selectbox(
     "Select a Player",
     all_players,
+    key='player',
     index=None,
     placeholder="Select any player",
 )
@@ -24,7 +25,6 @@ show_analysis = st.button("Show Analysis")
 
 
 if show_analysis:
-
     if option == None:
         st.title("Select any player")
         st.stop()
@@ -144,3 +144,40 @@ if show_analysis:
     ax.set_xlabel("Overs")
     ax.set_ylabel("IPL Season")
     st.pyplot(fig)
+
+# Compare two players
+st.header("Compare Two Players")
+col1, col2 = st.columns(2)
+
+with col1:
+    option1 = st.selectbox(
+        "Select a Player-1",
+        all_players,
+        key='option1',
+        index=None,
+        placeholder="Select any player",
+    )
+
+with col2:
+    option2 = st.selectbox(
+        "Select a Player-2",
+        all_players,
+        key='option2',
+        index=None,
+        placeholder="Select any player",
+    )
+
+compare = st.button("Comapre")
+
+if compare:
+    if option1 == None or option2 == None:
+        st.write("Choose Both Players First")
+        st.stop()
+    elif option1 == option2:
+        st.write("Choose Different Players")
+        st.stop()
+    
+
+    compared_df = comparison.compare_players(option1, option2)
+    st.write(compared_df)
+
